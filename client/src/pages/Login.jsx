@@ -1,11 +1,15 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Textbox from "../components/TextBox";
 import Button from "../components/Button";
+import { useSelector } from "react-redux";
 
 const Login = () => {
-  const user = "";
+
+  const navigate = useNavigate()
+
+  const {user} = useSelector(state => state.auth);
   const {
     register,
     handleSubmit,
@@ -16,10 +20,14 @@ const Login = () => {
   const submitHandler = async () => {
     console.log("Submit");
   };
+
+  console.log(user);
+  
   // in below line haya pe hum log
   useEffect(() => {
-    user && Navigate("/dashboard");
+    user && navigate('/dashboard');
   }, [user]);
+
   return (
     <div className="flex flex-col w-full min-h-screen">
       {/* Main content */}
