@@ -5,6 +5,7 @@ import {BrowserRouter} from 'react-router-dom'
 import {Provider} from 'react-redux'
 import store from './redux/store'
 import App from './App.jsx'
+import Dashboard from './pages/Dashboard.jsx'
 
 
 createRoot(document.getElementById('root')).render(
