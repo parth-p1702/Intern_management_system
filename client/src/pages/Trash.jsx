@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   MdDelete,
   MdKeyboardArrowDown,
@@ -7,10 +7,13 @@ import {
   MdKeyboardDoubleArrowUp,
   MdOutlineRestore,
 } from "react-icons/md";
-import { tasks } from "../assets/data";
-import Button from "../components/Button";
+import { tasks } from "../assets/data"; // Ideally, this should be fetched from an API
 import Title from "../components/Title";
+import Button from "../components/Button";
 import { PRIOTITYSTYELS, TASK_TYPE } from "../utils";
+import ConfirmatioDialog from "../components/Dialogs.jsx";
+import Loading from "../components/Loader";
+import { toast } from "sonner";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -20,14 +23,31 @@ const ICONS = {
 
 const Trash = () => {
   const [openDialog, setOpenDialog] = useState(false);
-  const [open, setOpen] = useState(false);
   const [msg, setMsg] = useState(null);
   const [type, setType] = useState("delete");
   const [selected, setSelected] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Simulating data fetching
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        // Here, you would normally fetch data from an API
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to load tasks.");
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const deleteAllClick = () => {
     setType("deleteAll");
-    setMsg("Do you want to permenantly delete all items?");
+    setMsg("Do you want to permanently delete all items?");
     setOpenDialog(true);
   };
 
@@ -50,79 +70,134 @@ const Trash = () => {
     setOpenDialog(true);
   };
 
+  // WE GO HERE ON RESUME
+  const deleteRestoreHandler = async () => {
+    try {
+      let res = null;
+
+      switch (type) {
+        case "delete":
+          res = await deleteRestoreTask({
+            id: selected,
+            actionType: "delete",
+          }).unwrap();
+          break;
+        case "deleteAll":
+          res = await deleteRestoreTask({
+            id: "",
+            actionType: "deleteAll",
+          }).unwrap();
+          break;
+        case "restore":
+          res = await deleteRestoreTask({
+            id: selected,
+            actionType: "restore",
+          }).unwrap();
+          break;
+        case "restoreAll":
+          res = await deleteRestoreTask({
+            id: "",
+            actionType: "restoreAll",
+          }).unwrap();
+          break;
+      }
+
+      toast.success(res?.message);
+
+      setTimeout(() => {
+        setOpenDialog(false);
+        refetch();
+      }, 500);
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.data?.message || err.error);
+    }
+  };
   const TableHeader = () => (
     <thead className='border-b border-gray-300'>
-      <tr className='text-black  text-left'>
+      <tr className='text-left text-black'>
         <th className='py-2'>Task Title</th>
         <th className='py-2'>Priority</th>
         <th className='py-2'>Stage</th>
         <th className='py-2 line-clamp-1'>Modified On</th>
+        <th className='py-2'>Actions</th>
       </tr>
     </thead>
   );
 
   const TableRow = ({ item }) => (
-    <tr className='border-b border-gray-200 text-gray-600 hover:bg-gray-400/10'>
+    <tr className='text-gray-600 border-b border-gray-200 hover:bg-gray-400/10'>
       <td className='py-2'>
         <div className='flex items-center gap-2'>
-          <div
-            className={clsx("w-4 h-4 rounded-full", TASK_TYPE[item.stage])}
-          />
-          <p className='w-full line-clamp-2 text-base text-black'>
-            {item?.title}
-          </p>
+          <div className={clsx("w-4 h-4 rounded-full", TASK_TYPE[item.stage])} />
+          <p className='w-full text-base text-black line-clamp-2'>{item?.title}</p>
         </div>
       </td>
-
       <td className='py-2 capitalize'>
-        <div className={"flex gap-1 items-center"}>
+        <div className="flex items-center gap-1">
           <span className={clsx("text-lg", PRIOTITYSTYELS[item?.priority])}>
             {ICONS[item?.priority]}
           </span>
-          <span className=''>{item?.priority}</span>
+          <span>{item?.priority}</span>
         </div>
       </td>
-
-      <td className='py-2 capitalize text-center md:text-start'>
-        {item?.stage}
-      </td>
+      <td className='py-2 text-center capitalize md:text-start'>{item?.stage}</td>
       <td className='py-2 text-sm'>{new Date(item?.date).toDateString()}</td>
-
-      <td className='py-2 flex gap-1 justify-end'>
+      <td className='flex justify-end py-2 gap- 1'>
         <Button
           icon={<MdOutlineRestore className='text-xl text-gray-500' />}
           onClick={() => restoreClick(item._id)}
+          aria-label={`Restore ${item.title}`}
         />
         <Button
           icon={<MdDelete className='text-xl text-red-600' />}
           onClick={() => deleteClick(item._id)}
+          aria-label={`Delete ${item.title}`}
         />
       </td>
     </tr>
   );
 
+  if (loading) {
+    return (
+      <div className='py-10'>
+        <Loading />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className='py-10 text-center text-red-600'>
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className='w-full md:px-1 px-0 mb-6'>
+      <div className='w-full px-0 mb-6 md:px-1'>
         <div className='flex items-center justify-between mb-8'>
           <Title title='Trashed Tasks' />
 
-          <div className='flex gap-2 md:gap-4 items-center'>
+          <div className='flex items-center gap-2 md:gap-4'>
             <Button
               label='Restore All'
-              icon={<MdOutlineRestore className='text-lg hidden md:flex' />}
-              className='flex flex-row-reverse gap-1 items-center  text-black text-sm md:text-base rounded-md 2xl:py-2.5'
-              onClick={() => restoreAllClick()}
+              icon={<MdOutlineRestore className='hidden text-lg md:flex' />}
+              className='flex flex-row-reverse gap-1 items-center text-black text-sm md:text-base rounded-md 2xl:py-2.5'
+              onClick={restoreAllClick}
+              aria-label="Restore all tasks"
             />
             <Button
               label='Delete All'
-              icon={<MdDelete className='text-lg hidden md:flex' />}
-              className='flex flex-row-reverse gap-1 items-center  text-red-600 text-sm md:text-base rounded-md 2xl:py-2.5'
-              onClick={() => deleteAllClick()}
+              icon={<MdDelete className='hidden text-lg md:flex' />}
+              className='flex flex-row-reverse gap-1 items-center text-red-600 text-sm md:text-base rounded-md 2xl:py-2.5'
+              onClick={deleteAllClick}
+              aria-label="Delete all tasks"
             />
           </div>
         </div>
-        <div className='bg-white px-2 md:px-6 py-4 shadow-md rounded'>
+        <div className='px-2 py-4 bg-white rounded shadow-md md:px-6'>
           <div className='overflow-x-auto'>
             <table className='w-full mb-5'>
               <TableHeader />
@@ -136,9 +211,7 @@ const Trash = () => {
         </div>
       </div>
 
-      {/* <AddUser open={open} setOpen={setOpen} /> */}
-
-      {/* <ConfirmatioDialog
+      <ConfirmatioDialog
         open={openDialog}
         setOpen={setOpenDialog}
         msg={msg}
@@ -146,7 +219,7 @@ const Trash = () => {
         type={type}
         setType={setType}
         onClick={() => deleteRestoreHandler()}
-      /> */}
+      />
     </>
   );
 };

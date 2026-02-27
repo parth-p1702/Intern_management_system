@@ -3,8 +3,11 @@ import React from 'react'
 
 const Button = ({icon, className, label, type, onClick=()=>{} }) => {
   return (
-    <button className={clsx('px-3 py-2 outline-none rounded-full',className)}
-    type={type || 'button'}>
+    <button 
+    type={type || 'button'}
+    className={clsx('px-3 py-2 outline-none rounded-full',className)}
+    onClick={onClick}
+    >
         <span>{label}</span>
         {icon && icon}
     </button>

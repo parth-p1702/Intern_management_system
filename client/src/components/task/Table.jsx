@@ -1,17 +1,18 @@
-import clsx from "clsx";
-import { useState } from "react";
+import React, { useState } from "react";
+import { BiMessageAltDetail } from "react-icons/bi";
 import {
-    MdAttachFile,
+  MdAttachFile,
   MdKeyboardArrowDown,
   MdKeyboardArrowUp,
   MdKeyboardDoubleArrowUp,
 } from "react-icons/md";
 import { toast } from "sonner";
-import { BGS, formatDate, PRIOTITYSTYELS, TASK_TYPE } from "../../utils";
-import { BiMessageAltDetail } from "react-icons/bi";
+import { BGS, PRIOTITYSTYELS, TASK_TYPE, formatDate } from "../../utils";
+import clsx from "clsx";
 import { FaList } from "react-icons/fa";
 import UserInfo from "../UserInfo";
 import Button from "../Button";
+import ConfirmatioDialog from "../Dialogs.jsx";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -30,15 +31,14 @@ const Table = ({ tasks }) => {
 
   const deleteHandler = () => {};
 
-
   const TableHeader = () => (
-    <thead className="w-full border-b border-gray-300">
-      <tr className="w-full text-black  text-left">
-        <th className="py-2">Task Title</th>
-        <th className="py-2">Priority</th>
-        <th className="py-2 line-clamp-1">Created At</th>
-        <th className="py-2">Assets</th>
-        <th className="py-2">Team</th>
+    <thead className='w-full border-b border-gray-300'>
+      <tr className='w-full text-black  text-left'>
+        <th className='py-2'>Task Title</th>
+        <th className='py-2'>Priority</th>
+        <th className='py-2 line-clamp-1'>Created At</th>
+        <th className='py-2'>Assets</th>
+        <th className='py-2'>Team</th>
       </tr>
     </thead>
   );
@@ -124,9 +124,9 @@ const Table = ({ tasks }) => {
   );
   return (
     <>
-      <div className="bg-white  px-2 md:px-4 pt-4 pb-9 shadow-md rounded">
-        <div className="overflow-x-auto">
-          <table className="w-full ">
+      <div className='bg-white  px-2 md:px-4 pt-4 pb-9 shadow-md rounded'>
+        <div className='overflow-x-auto'>
+          <table className='w-full '>
             <TableHeader />
             <tbody>
               {tasks.map((task, index) => (
@@ -136,12 +136,13 @@ const Table = ({ tasks }) => {
           </table>
         </div>
       </div>
+
       {/* TODO */}
-      {/* <ConfirmatioDialog
+      <ConfirmatioDialog
         open={openDialog}
         setOpen={setOpenDialog}
         onClick={deleteHandler}
-      /> */}
+      />
     </>
   );
 };

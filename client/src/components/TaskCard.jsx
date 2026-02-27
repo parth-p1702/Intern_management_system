@@ -1,18 +1,19 @@
 import clsx from "clsx";
 import { useState } from "react";
+import { BiMessageAltDetail } from "react-icons/bi";
+import { FaList } from "react-icons/fa";
+import { IoMdAdd } from "react-icons/io";
 import {
-  MdAttachFile,
-  MdKeyboardArrowDown,
-  MdKeyboardArrowUp,
-  MdKeyboardDoubleArrowUp,
+    MdAttachFile,
+    MdKeyboardArrowDown,
+    MdKeyboardArrowUp,
+    MdKeyboardDoubleArrowUp,
 } from "react-icons/md";
 import { useSelector } from "react-redux";
 import { BGS, formatDate, PRIOTITYSTYELS, TASK_TYPE } from "../utils";
 import TaskDialog from "./task/TaskDialog";
-import { BiMessageAltDetail } from "react-icons/bi";
-import { FaList } from "react-icons/fa";
 import UserInfo from "./UserInfo";
-import { IoMdAdd } from "react-icons/io";
+import AddSubTask from "./task/AddSubtask";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -119,7 +120,7 @@ const TaskCard = ({ task }) => {
         </div>
       </div>
 
-      {/* <AddSubTask open={open} setOpen={setOpen} id={task._id} /> */}
+      <AddSubTask open={open} setOpen={setOpen} id={task._id} />
     </>
   );
 };

@@ -1,16 +1,26 @@
 import { useState } from "react";
 import { FaList } from "react-icons/fa";
+import { IoMdAdd } from "react-icons/io";
 import { MdGridView } from "react-icons/md";
 import { useParams } from "react-router-dom";
-import Loading from "../components/Loader";
-import Title from "../components/Title";
-import { IoMdAdd } from "react-icons/io";
-import Button from "../components/Button";
-import Tabs from "../components/Tabs";
-import TaskTitle from "../components/TaskTitle";
-import BoardView from "../components/BoardView";
 import { tasks } from "../assets/data";
+import BoardView from "../components/BoardView";
+import Button from "../components/Button";
+import Loading from "../components/Loader";
+import Tabs from "../components/Tabs";
+import AddTask from "../components/task/AddTask";
 import Table from "../components/task/Table";
+import TaskTitle from "../components/TaskTitle";
+import Title from "../components/Title";
+
+// import { useState } from "react";
+// import { FaList } from "react-icons/fa";
+// import { IoMdAdd } from "react-icons/io";
+// import { MdGridView } from "react-icons/md";
+// import { useParams } from "react-router-dom";
+// import { Button, Loading, Table, Tabs, Title } from "../components";
+// import { AddTask, BoardView, TaskTitle } from "../components/tasks";
+// import { TASK_TYPE } from "../utils";
 
 const TABS = [
   { title: "Board View", icon: <MdGridView /> },
@@ -69,6 +79,8 @@ const Tasks = () => {
           </div>
         )}
         </Tabs>
+
+        <AddTask setOpen={setOpen} open={open}  />
       </div>
     </div>
   );
