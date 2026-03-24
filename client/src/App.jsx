@@ -11,7 +11,7 @@ import Sidebar from "./components/Sidebar.jsx";
 import Navbar from "./components/Navbar.jsx";
 import clsx from "clsx";
 import { Fragment, useRef } from "react";
-import { setOpenSideBar } from "./redux/slices/authSlice.js";
+import { setOpenSidebar } from "./redux/slices/authSlice.js";
 import { Transition } from "@headlessui/react";
 import { IoClose } from "react-icons/io5";
 
@@ -47,7 +47,7 @@ const MobileSidebar = () => {
   const dispatch = useDispatch();
 
   const closeSidebar = () => {
-    dispatch(setOpenSideBar(false));
+    dispatch(setOpenSidebar(false));
   };
   return (
     <>

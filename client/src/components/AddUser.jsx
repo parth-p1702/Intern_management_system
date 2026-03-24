@@ -1,17 +1,23 @@
 import { Dialog } from "@headlessui/react";
 import { useForm } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "./Button";
 import Loading from "./Loader";
 import ModalWrapper from "./ModalWrapper";
 import Textbox from "./Textbox";
+import { useRegisterMutation } from "../redux/slices/api/authApiSlice";
+import { useUpdateUserMutation } from "../redux/slices/api/userApiSlice";
+import { toast } from "sonner";
+import { setCredentials } from "../redux/slices/authSlice";
 
 const AddUser  = ({ open, setOpen, userData }) => {
   const defaultValues = userData ?? {};
   const { user } = useSelector((state) => state.auth);
   
-  const isLoading = false; // Replace with actual loading state if needed
-  const isUpdating = false; // Replace with actual updating state if needed
+  // const isLoading = false; // Replace with actual loading state if needed
+  // const isUpdating = false; // Replace with actual updating state if needed
+
+    const dispatch = useDispatch();
 
   const {
     register,
@@ -19,9 +25,34 @@ const AddUser  = ({ open, setOpen, userData }) => {
     formState: { errors },
   } = useForm({ defaultValues });
 
-  const handleOnSubmit = (data) => {
+  const [addNewUser, {isLoading}] = useRegisterMutation()
+  const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+
+  const handleOnSubmit = async(data) => {
     // Handle form submission logic here
-    console.log(data);
+    // console.log(data);
+     try {
+      if (userData) {
+        const result = await updateUser(data).unwrap();
+        toast.success(result?.message);
+        if (userData?._id === user?._id) {
+          dispatch(setCredentials({ ...result?.user }));
+        }
+      } else {
+        const result = await addNewUser({
+          ...data,
+          password: data?.email,
+        }).unwrap();
+        toast.success("New User added successfully");
+      }
+
+      setTimeout(() => {
+        setOpen(false);
+      }, 1500);
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.data?.message || err.error);
+    }
   };
 
   return (

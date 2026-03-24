@@ -9,7 +9,7 @@ import {
 import { FaTasks, FaTrashAlt, FaUsers } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { setOpenSideBar, } from "../redux/slices/authSlice";
+import { setOpenSidebar } from "../redux/slices/authSlice";
 import clsx from "clsx";
 
 
@@ -62,7 +62,7 @@ const Sidebar = () => {
     const sidebarLinks = user?.isAdmin ? linkData : linkData.slice(0,5);
 
     const closeSidebar = () => {
-        dispatch(setOpenSideBar(false))
+        dispatch(setOpenSidebar(false))
     }
 
     const NavLink = ({el}) => {

@@ -89,10 +89,10 @@ const act_types = [
 const TaskDetails = () => {
   const { id } = useParams();
   const [selected, setSelected] = useState(0);
-  const task = tasks[id]; // This should ideally come from a data fetch based on the id
+  const task = tasks[3]; // This should ideally come from a data fetch based on the id
 
   return (
-    <div className='flex flex-col w-full gap-3 overflow-y-hidden mb-4'>
+    <div className='flex flex-col w-full gap-3 overflow-y-hidden mb- 4'>
       <h1 className='text-2xl font-bold text-gray-600'>{task?.title}</h1>
 
       <Tabs tabs={TABS} setSelected={setSelected}>
@@ -105,7 +105,7 @@ const TaskDetails = () => {
                   <div
                     className={clsx(
                       "flex gap-1 items-center text-base font-semibold px-3 py-1 rounded-full",
-                      PRIOTITYSTYELS[task?.priority],
+                    PRIOTITYSTYELS[task?.priority],
                       bgColor[task?.priority]
                     )}
                   >
@@ -117,7 +117,7 @@ const TaskDetails = () => {
                     <div
                       className={clsx(
                         "w-4 h-4 rounded-full",
-                        TASK_TYPE[task?.stage]
+                        TASK_TYPE[task.stage]
                       )}
                     />
                     <span className='text-black uppercase'>{task?.stage}</span>

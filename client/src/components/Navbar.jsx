@@ -1,6 +1,6 @@
 import { MdOutlineSearch } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { setOpenSideBar } from "../redux/slices/authSlice";
+import { setOpenSidebar } from "../redux/slices/authSlice";
 import UserAvatar from "./UserAvatar";
 import NotificationPanel from "./NotificationPanel";
 
@@ -13,7 +13,7 @@ const Navbar = () => {
       {/* Left Navbar */}
       <div className="flex gap-4">
         <button
-          onClick={() => dispatch(setOpenSideBar(true))}
+          onClick={() => dispatch(setOpenSidebar(true))}
           className="text-2xl text-gray-500 block md:hidden"
         >
           ☰
