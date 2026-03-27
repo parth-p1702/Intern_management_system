@@ -1,23 +1,16 @@
 import { Dialog } from "@headlessui/react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
-import Button from "./Button";
-import Loading from "./Loader";
-import ModalWrapper from "./ModalWrapper";
-import Textbox from "./Textbox";
+import { toast } from "sonner";
 import { useRegisterMutation } from "../redux/slices/api/authApiSlice";
 import { useUpdateUserMutation } from "../redux/slices/api/userApiSlice";
-import { toast } from "sonner";
 import { setCredentials } from "../redux/slices/authSlice";
+import { Button, Loading, ModalWrapper, Textbox } from "./";
 
-const AddUser  = ({ open, setOpen, userData }) => {
-  const defaultValues = userData ?? {};
+const AddUser = ({ open, setOpen, userData }) => {
+  let defaultValues = userData ?? {};
   const { user } = useSelector((state) => state.auth);
-  
-  // const isLoading = false; // Replace with actual loading state if needed
-  // const isUpdating = false; // Replace with actual updating state if needed
-
-    const dispatch = useDispatch();
 
   const {
     register,
@@ -25,21 +18,21 @@ const AddUser  = ({ open, setOpen, userData }) => {
     formState: { errors },
   } = useForm({ defaultValues });
 
-  const [addNewUser, {isLoading}] = useRegisterMutation()
+  const dispatch = useDispatch();
+
+  const [addNewUser, { isLoading }] = useRegisterMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
-  const handleOnSubmit = async(data) => {
-    // Handle form submission logic here
-    // console.log(data);
-     try {
+  const handleOnSubmit = async (data) => {
+    try {
       if (userData) {
-        const result = await updateUser(data).unwrap();
-        toast.success(result?.message);
+        const res = await updateUser(data).unwrap();
+        toast.success(res?.message);
         if (userData?._id === user?._id) {
-          dispatch(setCredentials({ ...result?.user }));
+          dispatch(setCredentials({ ...res?.user }));
         }
       } else {
-        const result = await addNewUser({
+        const res = await addNewUser({
           ...data,
           password: data?.email,
         }).unwrap();
@@ -56,53 +49,87 @@ const AddUser  = ({ open, setOpen, userData }) => {
   };
 
   return (
-    <ModalWrapper open={open} setOpen={setOpen}>
-      <form onSubmit={handleSubmit(handleOnSubmit)} className=''>
-        <Dialog.Title as='h2' className='mb-4 text-base font-bold leading-6 text-gray-900'>
-          {userData ? "UPDATE PROFILE" : "ADD NEW USER"}
-        </Dialog.Title>
-        <div className='flex flex-col gap-6 mt-2'>
-          {[
-            { name: "name", label: "Full Name", type: "text", placeholder: "Full name", requiredMessage: "Full name is required!" },
-            { name: "title", label: "Title", type: "text", placeholder: "Title", requiredMessage: "Title is required!" },
-            { name: "email", label: "Email Address", type: "email", placeholder: "Email Address", requiredMessage: "Email Address is required!" },
-            { name: "role", label: "Role", type: "text", placeholder: "Role", requiredMessage: "User  role is required!" },
-          ].map(({ name, label, type, placeholder, requiredMessage }) => (
+    <>
+      <ModalWrapper open={open} setOpen={setOpen}>
+        <form onSubmit={handleSubmit(handleOnSubmit)} className=''>
+          <Dialog.Title
+            as='h2'
+            className='text-base font-bold leading-6 text-gray-900 mb-4'
+          >
+            {userData ? "UPDATE PROFILE" : "ADD NEW USER"}
+          </Dialog.Title>
+          <div className='mt-2 flex flex-col gap-6'>
             <Textbox
-              key={name}
-              placeholder={placeholder}
-              type={type}
-              name={name}
-              label={label}
+              placeholder='Full name'
+              type='text'
+              name='name'
+              label='Full Name'
               className='w-full rounded'
-              register={register(name, { required: requiredMessage })}
-              error={errors[name]?.message}
+              register={register("name", {
+                required: "Full name is required!",
+              })}
+              error={errors.name ? errors.name.message : ""}
             />
-          ))}
-        </div>
+            <Textbox
+              placeholder='Title'
+              type='text'
+              name='title'
+              label='Title'
+              className='w-full rounded'
+              register={register("title", {
+                required: "Title is required!",
+              })}
+              error={errors.title ? errors.title.message : ""}
+            />
+            <Textbox
+              placeholder='Email Address'
+              type='email'
+              name='email'
+              label='Email Address'
+              className='w-full rounded'
+              register={register("email", {
+                required: "Email Address is required!",
+              })}
+              error={errors.email ? errors.email.message : ""}
+            />
 
-        {isLoading || isUpdating ? (
-          <div className='py-5'>
-            <Loading />
-          </div>
-        ) : (
-          <div className='py-3 mt-4 sm:flex sm:flex-row-reverse'>
-            <Button
-              type='submit'
-              className='px-8 text-sm font-semibold text-white bg-orange-600 hover:bg-orange-700 sm:w-auto'
-              label='Submit'
-            />
-            <Button
-              type='button'
-              className='px-5 text-sm font-semibold text-gray-900 bg-white sm:w-auto'
-              onClick={() => setOpen(false)}
-              label='Cancel'
+            <Textbox
+              placeholder='Role'
+              type='text'
+              name='role'
+              label='Role'
+              className='w-full rounded'
+              register={register("role", {
+                required: "User role is required!",
+              })}
+              error={errors.role ? errors.role.message : ""}
             />
           </div>
-        )}
-      </form>
-    </ModalWrapper>
+
+          {isLoading || isUpdating ? (
+            <div className='py-5'>
+              <Loading />
+            </div>
+          ) : (
+            <div className='py-3 mt-4 sm:flex sm:flex-row-reverse'>
+              <Button
+                type='submit'
+                className='bg-blue-600 px-8 text-sm font-semibold text-white hover:bg-blue-700  sm:w-auto'
+                label='Submit'
+              />
+
+              <Button
+                type='button'
+                className='bg-white px-5 text-sm font-semibold text-gray-900 sm:w-auto'
+                onClick={() => setOpen(false)}
+                label='Cancel'
+              />
+            </div>
+          )}
+        </form>
+      </ModalWrapper>
+    </>
   );
 };
 
-export default AddUser ;
+export default AddUser;
